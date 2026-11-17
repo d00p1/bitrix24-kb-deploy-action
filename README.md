@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to Bitrix24 Knowledge Base 2.0
-        uses: <your-username>/bitrix24-kb-deploy-action@v1
+        uses: d00p1/bitrix24-kb-deploy-action@v1
         with:
           webhook-url: ${{ secrets.BITRIX24_WEBHOOK_URL }}
           # collection-id: 42          # or find/create by title:
