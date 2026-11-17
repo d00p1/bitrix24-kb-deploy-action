@@ -1,0 +1,22 @@
+{
+  "name": "bitrix24-kb-deploy-action",
+  "version": "1.0.0",
+  "description": "Deploy Markdown content to Bitrix24 Knowledge Base 2.0 (REST 3.0, note.* methods)",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js --minify",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node test/run-tests.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^9.1.1",
+    "@actions/http-client": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

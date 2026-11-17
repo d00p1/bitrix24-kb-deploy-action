@@ -1,0 +1,71 @@
+name: Bitrix24 KB 2.0 Deploy
+description: >-
+  Deploys Markdown files from the repository to Bitrix24 Knowledge Base 2.0
+  via REST 3.0 (note.* methods). Reusable: pass webhook URL, collection and
+  content directory.
+author: your-team
+branding:
+  icon: upload-cloud
+  color: blue
+
+inputs:
+  webhook-url:
+    description: >-
+      Incoming webhook URL with REST 3.0 path, e.g.
+      https://portal.bitrix24.ru/rest/api/1/xxxxxxxx. The webhook must have
+      the "note" (Knowledge Base 2.0) scope and its owner needs edit access
+      to the target knowledge base.
+    required: true
+  collection-id:
+    description: ID of the target knowledge base. If omitted, the action looks
+      it up (or creates it) by collection-title.
+    required: false
+  collection-title:
+    description: Title used to find or create the knowledge base when
+      collection-id is not set. Ignored otherwise.
+    required: false
+    default: GitHub Docs
+  content-dir:
+    description: Directory with Markdown content. Directory structure becomes
+      the page hierarchy (each directory is a page; its index.md/README.md is
+      the page content). Regular .md files become pages.
+    required: false
+    default: docs
+  manifest-path:
+    description: Path to the mapping file (repo path -> document ID). The file
+      is updated in the workspace; commit it back to keep IDs stable between
+      runs.
+    required: false
+    default: .kb-manifest.json
+  delete-removed:
+    description: Archive pages that exist in the manifest but are absent in
+      the repository (works on the whole subtree of a removed page).
+    required: false
+    default: 'true'
+  max-retries:
+    description: Number of retries on 429/5xx responses before failing.
+    required: false
+    default: '5'
+  github-token:
+    description: >-
+      Token used to commit the updated manifest back to the repository via the
+      Contents API. Defaults to the workflow token — grant "contents: write"
+      permission. Set to an empty string to disable the commit.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  collection-id:
+    description: ID of the knowledge base used for the deploy
+  created:
+    description: Number of created documents
+  updated:
+    description: Number of updated documents
+  archived:
+    description: Number of archived documents
+  unchanged:
+    description: Number of documents left unchanged
+
+runs:
+  using: node24
+  main: dist/index.js

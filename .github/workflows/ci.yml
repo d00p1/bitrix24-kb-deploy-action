@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Typecheck, test and verify bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Integration tests (mock Bitrix24 REST 3.0)
+        run: npm test
+
+      - name: Rebuild bundle
+        run: npm run build
+
+      - name: Verify dist/ is up to date
+        run: |
+          if ! git diff --exit-code -- dist/index.js; then
+            echo "::error::dist/index.js is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi
+
+      - name: Validate action.yml
+        run: |
+          python3 - <<'EOF'
+          import sys, yaml
+          with open('action.yml') as f:
+              doc = yaml.safe_load(f)
+          assert doc.get('runs', {}).get('using') == 'node24', 'runs.using must be node24'
+          assert doc.get('runs', {}).get('main') == 'dist/index.js', 'runs.main must be dist/index.js'
+          for name in ('webhook-url', 'content-dir'):
+              assert name in doc.get('inputs', {}), f'missing input: {name}'
+          for name in ('created', 'updated', 'archived', 'unchanged'):
+              assert name in doc.get('outputs', {}), f'missing output: {name}'
+          print('action.yml OK')
+          EOF
