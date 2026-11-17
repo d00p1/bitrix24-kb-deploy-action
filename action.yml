@@ -1,8 +1,5 @@
 name: Bitrix24 KB 2.0 Deploy
-description: >-
-  Deploys Markdown files from the repository to Bitrix24 Knowledge Base 2.0
-  via REST 3.0 (note.* methods). Reusable: pass webhook URL, collection and
-  content directory.
+description: Deploys Markdown files from the repository to Bitrix24 Knowledge Base 2.0 via REST 3.0
 author: your-team
 branding:
   icon: upload-cloud
